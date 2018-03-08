@@ -1,0 +1,30 @@
+{
+  "name": "yumu-static-server",
+  "version": "0.0.2",
+  "description": "使用node搭建静态资源服务器",
+  "main": "index.js",
+  "scripts": {
+    "dev": "supervisor app.js",
+    "start": "node app.js"
+  },
+  "bin": {
+    "server": "index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dushao103500/static-server"
+  },
+  "author": "",
+  "license": "ISC",
+  "homepage": "https://github.com/dushao103500/static-server#readme",
+  "keywords": [
+    "static-server",
+    "server"
+  ],
+  "dependencies": {
+    "yargs": "^6.6.0"
+  },
+  "devDependencies": {
+    "supervisor": "^0.12.0"
+  }
+}

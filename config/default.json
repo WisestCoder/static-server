@@ -1,0 +1,6 @@
+{
+    "port": 8080,
+    "indexPage": "index.html",
+    "openIndexPage": true,
+    "zipMatch": "^\\.(css|js|html)$"
+}
