@@ -6,6 +6,14 @@
 npm install yumu-static-server -g
 ```
 
+### 使用
+
+```bash
+server  // 会在当前目录下启动一个静态资源服务器，默认端口为8080
+
+server -p 3000  // 会在当前目录下启动一个静态资源服务器，端口为3000
+```
+
 ### 默认配置（会被命令行参数覆盖）
 
 `./config/default.json`
