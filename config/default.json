@@ -1,6 +1,7 @@
 {
     "port": 8080,
     "indexPage": "index.html",
+    "charset": "UTF-8",
     "openIndexPage": true,
     "zipMatch": "^\\.(css|js|html)$"
 }

@@ -7,8 +7,9 @@ const mime = require('./mime');
 const config = require('../config/default');
 
 var options = require( "yargs" )
-    .option( "p", { alias: "port",  describe: "Port number", type: "number" } )
-    .option( "i", { alias: "index", describe: "Default page", type: "string" } )
+    .option( "p", { alias: "port",  describe: "设置服务启动的端口号", type: "number" } )
+    .option( "i", { alias: "index", describe: "设置默认打开的主页", type: "string" } )
+    .option( "c", { alias: "charset", describe: "设置文件的默认字符集", type: "string" } )
     .help()
     .alias( "?", "help" )
     .argv;
@@ -20,6 +21,7 @@ class StaticServer {
         this.port = options.p || config.port;
         this.indexPage = options.i || config.indexPage;
         this.openIndexPage = config.openIndexPage;
+        this.charset = options.c || config.charset;
     }
 
     respondError(err, res) {
@@ -61,7 +63,7 @@ class StaticServer {
 
     responseFile(stat, pathName, req, res) {
         let readStream;
-        res.setHeader('Content-Type', mime.lookup(pathName));
+        res.setHeader('Content-Type', `${mime.lookup(pathName)}; charset=${this.charset}`);
         res.setHeader('Accept-Ranges', 'bytes');
         readStream = fs.createReadStream(pathName);
         // 判断是否需要解压
