@@ -1,5 +1,10 @@
 ## 使用node搭建静态资源服务器
 
+[![NPM version](https://img.shields.io/npm/v/yumu-static-server.svg?style=flat)](https://npmjs.org/package/yumu)
+[![npm](https://img.shields.io/npm/dt/yumu-static-server.svg)](https://npmjs.org/package/yumu)
+[![GitHub stars](https://img.shields.io/github/stars/dushao103500/static-server.svg?style=social&label=Star)](https://github.com/dushao103500/static-server)
+[![GitHub forks](https://img.shields.io/github/forks/dushao103500/static-server.svg?style=social&label=Fork)](https://github.com/dushao103500/static-server)
+
 ### 安装
 
 ```bash
