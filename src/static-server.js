@@ -3,10 +3,12 @@ const path = require('path');
 const fs = require('fs');
 const url = require('url');
 const zlib = require('zlib');
+const chalk = require('chalk');
+const os = require('os');
 const mime = require('./mime');
 const config = require('../config/default');
 
-var options = require( "yargs" )
+const options = require( "yargs" )
     .option( "p", { alias: "port",  describe: "设置服务启动的端口号", type: "number" } )
     .option( "i", { alias: "index", describe: "设置默认打开的主页", type: "string" } )
     .option( "c", { alias: "charset", describe: "设置文件的默认字符集", type: "string" } )
@@ -15,6 +17,8 @@ var options = require( "yargs" )
     .argv;
 
 const hasTrailingSlash = url => url[url.length - 1] === '/';
+
+const ifaces = os.networkInterfaces();
 
 class StaticServer {
     constructor() {
@@ -132,17 +136,37 @@ class StaticServer {
     }
 
     start() {
-        http.createServer((req, res) => {
+        const me = this;
+        let isPostBeUsed = false;
+        const oldPort = me.port;
+        const server = http.createServer((req, res) => {
             const pathName = path.join(process.cwd(), path.normalize(req.url));
-            this.routeHandler(pathName, req, res);
-        }).listen(this.port, err => {
-            if (err) {
-                console.error(err);
-                console.info('Failed to start server');
-            } else {
-                console.info(`Server started on port ${this.port}`);
+            me.routeHandler(pathName, req, res);
+        }).listen(me.port);
+        server.on('listening', function () { // 执行这块代码说明端口未被占用
+            if (isPostBeUsed) {
+                console.log(`${chalk.red(`The port ${oldPort} is being used, change to port `)}${chalk.green(me.port)} `);
             }
-        });
+            console.log(`${chalk.yellow(`Starting up your server
+Available on:`)}`);
+            Object.keys(ifaces).forEach(function (dev) {
+                ifaces[dev].forEach(function (details) {
+                if (details.family === 'IPv4') {
+                    console.log(`  http://${details.address}:${chalk.green(me.port)}`);
+                }
+                });
+            });
+          })
+        
+        server.on('error', function (err) {
+            if (err.code === 'EADDRINUSE') { // 端口已经被使用
+                isPostBeUsed = true;
+                me.port = parseInt(me.port) + 1;
+                server.listen(me.port);
+            } else {
+                console.log(err);
+            }
+        })
     }
 }
 
