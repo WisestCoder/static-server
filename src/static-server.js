@@ -5,8 +5,12 @@ const url = require('url');
 const zlib = require('zlib');
 const chalk = require('chalk');
 const os = require('os');
+const Handlebars = require('handlebars');
 const mime = require('./mime');
+const templateStr = require('./template');
 const config = require('../config/default');
+
+const template = Handlebars.compile(templateStr);
 
 const options = require( "yargs" )
     .option( "p", { alias: "port",  describe: "设置服务启动的端口号", type: "number" } )
@@ -37,7 +41,11 @@ class StaticServer {
         res.writeHead(404, {
             'Content-Type': 'text/html'
         });
-        res.end(`<h1>Not Found</h1><p>The requested URL ${req.url} was not found on this server.</p>`);
+        const html = template({
+            htmlStr: `<h1>Not Found</h1><p>The requested URL ${req.url} was not found on this server.</p>`,
+            showFileList: false
+        })
+        res.end(html);
     }
 
     shouldCompress(pathName) {
@@ -59,9 +67,6 @@ class StaticServer {
         } else if (acceptEncoding.match(/\bgzip\b/)) {
             res.setHeader('Content-Encoding', 'gzip');
             return readStream.pipe(zlib.createGzip());
-        } else if (acceptEncoding.match(/\bdeflate\b/)) {
-            res.setHeader('Content-Encoding', 'deflate');
-            return readStream.pipe(zlib.createDeflate());
         }
     }
 
@@ -83,7 +88,11 @@ class StaticServer {
             'Location': location,
             'Content-Type': 'text/html'
         });
-        res.end(`Redirecting to <a href='${location}'>${location}</a>`);
+        const html = template({
+            htmlStr: `Redirecting to <a href='${location}'>${location}</a>`,
+            showFileList: false
+        })
+        res.end(html);
     }
 
     respondDirectory(pathName, req, res) {
@@ -97,19 +106,27 @@ class StaticServer {
                     respondError(err, res);
                 }
                 const requestPath = url.parse(req.url).pathname;
-                let content = `<h1>Index of ${requestPath}</h1>`;
+                const fileList = [];
                 files.forEach(fileName => {
                     let itemLink = path.join(requestPath, fileName);
                     const stat = fs.statSync(path.join(pathName, fileName));
                     if (stat && stat.isDirectory()) {
                         itemLink = path.join(itemLink, '/');
-                    }                 
-                    content += `<p><a href='${itemLink}'>${fileName}</a></p>`;
+                    }     
+                    fileList.push({
+                        link: itemLink,
+                        name: fileName
+                    });            
                 });
                 res.writeHead(200, {
                     'Content-Type': 'text/html'
                 });
-                res.end(content);
+                const html = template({
+                    requestPath,
+                    fileList,
+                    showFileList: true
+                })
+                res.end(html);
             });
         }
     }
