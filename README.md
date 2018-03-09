@@ -41,4 +41,4 @@ server -p 3000  // 会在当前目录下启动一个静态资源服务器，端�
 ### TODO
 
 - [x] 引入handlerbars编译模板
-- [] 支持https服务
+- [ ] 支持https服务
