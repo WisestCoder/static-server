@@ -29,7 +29,7 @@ server -cors  # 开启文件跨域
 
 `./config/default.json`
 
-```json
+```javascript
 {
   "port": 8080, // 服务启动的端口号
   "indexPage": "index.html", // 文件夹下默认加载文件
