@@ -16,6 +16,7 @@ const options = require( "yargs" )
     .option( "p", { alias: "port",  describe: "设置服务启动的端口号", type: "number" } )
     .option( "i", { alias: "index", describe: "设置默认打开的主页", type: "string" } )
     .option( "c", { alias: "charset", describe: "设置文件的默认字符集", type: "string" } )
+    .option( "cors", { describe: "设置文件是否跨域", type: "boolean" } )
     .help()
     .alias( "?", "help" )
     .argv;
@@ -30,6 +31,7 @@ class StaticServer {
         this.indexPage = options.i || config.indexPage;
         this.openIndexPage = config.openIndexPage;
         this.charset = options.c || config.charset;
+        this.cors = options.cors;
     }
 
     respondError(err, res) {
@@ -74,6 +76,7 @@ class StaticServer {
         let readStream;
         res.setHeader('Content-Type', `${mime.lookup(pathName)}; charset=${this.charset}`);
         res.setHeader('Accept-Ranges', 'bytes');
+        if (this.cors) res.setHeader('Access-Control-Allow-Origin', '*');
         readStream = fs.createReadStream(pathName);
         // 判断是否需要解压
         if (this.shouldCompress(pathName)) {
@@ -136,7 +139,7 @@ class StaticServer {
             if (!err) {
                 const requestedPath = url.parse(req.url).pathname;
                 // 检查url
-                // 如果末尾有'.'，且是文件夹，则读取文件夹
+                // 如果末尾有'/'，且是文件夹，则读取文件夹
                 // 如果是文件夹，但末尾没'/'，则重定向至'xxx/'
                 // 如果是文件，则判断是否是压缩文件，是则解压，不是则读取文件
                 if (hasTrailingSlash(requestedPath) && stat.isDirectory()) {
@@ -173,7 +176,7 @@ Available on:`)}`);
                 }
                 });
             });
-          })
+        });
         
         server.on('error', function (err) {
             if (err.code === 'EADDRINUSE') { // 端口已经被使用
