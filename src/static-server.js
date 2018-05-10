@@ -186,10 +186,13 @@ class StaticServer {
         const oldPort = me.port;
         const protocal = me.protocal === 'https' ? https : http;
         const options = me.protocal === 'https' ? { key: keys.serviceKey, cert: keys.certificate } : null;
-        const server = protocal.createServer(options, (req, res) => {
+        const callback = (req, res) => {
             const pathName = path.join(process.cwd(), path.normalize(req.url));
             me.routeHandler(pathName, req, res);
-        }).listen(me.port);
+        };
+        const params = [callback];
+        if (me.protocal === 'https') params.unshift(options);
+        const server = protocal.createServer(...params).listen(me.port);
         server.on('listening', function () { // 执行这块代码说明端口未被占用
             if (isPostBeUsed) {
                 me.logUsedPort(oldPort, me.port);
