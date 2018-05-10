@@ -23,6 +23,8 @@ server -i[index] index.html  # 设置文件夹在默认加载的文件
 server -c[charset] UTF-8  # 设置文件默认加载的字符编码
 
 server -cors  # 开启文件跨域
+
+server -h[https]  # 开启https服务
 ```
 
 ### 默认配置（会被命令行参数覆盖）
@@ -46,9 +48,10 @@ server -cors  # 开启文件跨域
 3. 字符编码可配置
 4. 文件夹下默认加载文件可配置
 5. 是否跨域可配置
+5. 开启https服务
 
 ### TODO
 
 - [x] 引入handlerbars编译模板
 - [x] 支持文件是否跨域
-- [ ] 支持https服务
+- [x] 支持https服务

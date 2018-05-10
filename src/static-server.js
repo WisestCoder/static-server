@@ -1,4 +1,5 @@
 const http = require('http');
+const https = require('https');
 const path = require('path');
 const fs = require('fs');
 const url = require('url');
@@ -6,6 +7,7 @@ const zlib = require('zlib');
 const chalk = require('chalk');
 const os = require('os');
 const Handlebars = require('handlebars');
+const pem = require('pem');
 const mime = require('./mime');
 const templateStr = require('./template');
 const config = require('../config/default');
@@ -17,6 +19,7 @@ const options = require( "yargs" )
     .option( "i", { alias: "index", describe: "设置默认打开的主页", type: "string" } )
     .option( "c", { alias: "charset", describe: "设置文件的默认字符集", type: "string" } )
     .option( "cors", { describe: "设置文件是否跨域", type: "boolean" } )
+    .option( "h", { alias: "https", describe: "设置是否启用https服务", type: "boolean" } )
     .help()
     .alias( "?", "help" )
     .argv;
@@ -32,6 +35,7 @@ class StaticServer {
         this.openIndexPage = config.openIndexPage;
         this.charset = options.c || config.charset;
         this.cors = options.cors;
+        this.protocal = options.h ? 'https' : 'http';
     }
 
     respondError(err, res) {
@@ -155,27 +159,42 @@ class StaticServer {
         });
     }
 
-    start() {
+    logUsingPort() {
+        const me = this;
+        console.log(`${chalk.yellow(`Starting up your server\nAvailable on:`)}`);
+        Object.keys(ifaces).forEach(function (dev) {
+            ifaces[dev].forEach(function (details) {
+                if (details.family === 'IPv4') {
+                    console.log(`   ${me.protocal}://${details.address}:${chalk.green(me.port)}`);
+                }
+            });
+        });
+    }
+
+    logUsedPort(oldPort, port) {
+        const me = this;
+        console.log(`${chalk.red(`The port ${oldPort} is being used, change to port `)}${chalk.green(me.port)} `);
+    }
+
+    logHttpsTrusted() {
+        console.log(chalk.green('Currently is using HTTPS certificate (Manually trust it if necessary)'));
+    }
+
+    startServer(keys) {
         const me = this;
         let isPostBeUsed = false;
         const oldPort = me.port;
-        const server = http.createServer((req, res) => {
+        const protocal = me.protocal === 'https' ? https : http;
+        const options = me.protocal === 'https' ? { key: keys.serviceKey, cert: keys.certificate } : null;
+        const server = protocal.createServer(options, (req, res) => {
             const pathName = path.join(process.cwd(), path.normalize(req.url));
             me.routeHandler(pathName, req, res);
         }).listen(me.port);
         server.on('listening', function () { // 执行这块代码说明端口未被占用
             if (isPostBeUsed) {
-                console.log(`${chalk.red(`The port ${oldPort} is being used, change to port `)}${chalk.green(me.port)} `);
+                me.logUsedPort(oldPort, me.port);
             }
-            console.log(`${chalk.yellow(`Starting up your server
-Available on:`)}`);
-            Object.keys(ifaces).forEach(function (dev) {
-                ifaces[dev].forEach(function (details) {
-                if (details.family === 'IPv4') {
-                    console.log(`  http://${details.address}:${chalk.green(me.port)}`);
-                }
-                });
-            });
+            me.logUsingPort();
         });
         
         server.on('error', function (err) {
@@ -187,6 +206,21 @@ Available on:`)}`);
                 console.log(err);
             }
         })
+    }
+
+    start() {
+        const me = this;
+        if (this.protocal === 'https') {
+            pem.createCertificate({ days: 1, selfSigned: true }, function (err, keys) {
+                if (err) {
+                  throw err
+                }
+                me.logHttpsTrusted();
+                me.startServer(keys);
+            })
+        } else {
+            me.startServer();
+        }
     }
 }
 
