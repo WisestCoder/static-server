@@ -48,7 +48,7 @@ class StaticServer {
             'Content-Type': 'text/html'
         });
         const html = template({
-            htmlStr: `<h1>Not Found</h1><p>The requested URL ${req.url} was not found on this server.</p>`,
+            htmlStr: '<h1>Not Found</h1><p>The requested URL ' + req.url + 'was not found on this server.</p>',
             showFileList: false
         })
         res.end(html);
@@ -187,7 +187,8 @@ class StaticServer {
         const protocal = me.protocal === 'https' ? https : http;
         const options = me.protocal === 'https' ? { key: keys.serviceKey, cert: keys.certificate } : null;
         const callback = (req, res) => {
-            const pathName = path.join(process.cwd(), path.normalize(req.url));
+            const pathName = path.join(process.cwd(), path.normalize(decodeURI(req.url)));
+            console.log(pathName);
             me.routeHandler(pathName, req, res);
         };
         const params = [callback];
