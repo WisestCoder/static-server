@@ -9,10 +9,13 @@ const os = require('os');
 const Handlebars = require('handlebars');
 const pem = require('pem');
 const mime = require('./mime');
-const templateStr = require('./template');
+// const templateStr = require('./template');
+const Template = require('./templates');
 const config = require('../config/default');
 
-const template = Handlebars.compile(templateStr);
+// const template = Handlebars.compile(templateStr);
+const _defaultTemplate = Handlebars.compile(Template.page_dafault);
+const _404TempLate = Handlebars.compile(Template.page_404);
 
 const options = require( "yargs" )
     .option( "p", { alias: "port",  describe: "设置服务启动的端口号", type: "number" } )
@@ -47,10 +50,7 @@ class StaticServer {
         res.writeHead(404, {
             'Content-Type': 'text/html'
         });
-        const html = template({
-            htmlStr: '<h1>Not Found</h1><p>The requested URL ' + req.url + 'was not found on this server.</p>',
-            showFileList: false
-        })
+        const html = _404TempLate();
         res.end(html);
     }
 
@@ -95,7 +95,7 @@ class StaticServer {
             'Location': location,
             'Content-Type': 'text/html'
         });
-        const html = template({
+        const html = _defaultTemplate({
             htmlStr: `Redirecting to <a href='${location}'>${location}</a>`,
             showFileList: false
         })
@@ -128,7 +128,7 @@ class StaticServer {
                 res.writeHead(200, {
                     'Content-Type': 'text/html'
                 });
-                const html = template({
+                const html = _defaultTemplate({
                     requestPath,
                     fileList,
                     showFileList: true
