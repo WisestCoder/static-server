@@ -6,14 +6,13 @@ const url = require('url');
 const zlib = require('zlib');
 const chalk = require('chalk');
 const os = require('os');
+const open = require("open");
 const Handlebars = require('handlebars');
 const pem = require('pem');
 const mime = require('./mime');
-// const templateStr = require('./template');
 const Template = require('./templates');
 const config = require('../config/default');
 
-// const template = Handlebars.compile(templateStr);
 const _defaultTemplate = Handlebars.compile(Template.page_dafault);
 const _404TempLate = Handlebars.compile(Template.page_404);
 
@@ -188,7 +187,6 @@ class StaticServer {
         const options = me.protocal === 'https' ? { key: keys.serviceKey, cert: keys.certificate } : null;
         const callback = (req, res) => {
             const pathName = path.join(process.cwd(), path.normalize(decodeURI(req.url)));
-            console.log(pathName);
             me.routeHandler(pathName, req, res);
         };
         const params = [callback];
@@ -199,6 +197,7 @@ class StaticServer {
                 me.logUsedPort(oldPort, me.port);
             }
             me.logUsingPort();
+            open(`${me.protocal}://127.0.0.1:${me.port}`);
         });
         
         server.on('error', function (err) {
