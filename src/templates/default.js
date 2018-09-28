@@ -36,7 +36,7 @@ module.exports = `
       {{/if}}
   </div>
   <div class="footer">
-      <span>github地址: <a target="_blank" href="https://github.com/dushao103500/static-server">https://github.com/dushao103500/static-server</a></span>
+      <span>github地址: <a target="_blank" href="https://github.com/WisestCoder/static-server">https://github.com/WisestCoder/static-server</a></span>
       <br />
       <span>&copy; ISC</span>
   </div>
