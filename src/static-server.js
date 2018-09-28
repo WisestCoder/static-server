@@ -16,14 +16,17 @@ const config = require('../config/default');
 const _defaultTemplate = Handlebars.compile(Template.page_dafault);
 const _404TempLate = Handlebars.compile(Template.page_404);
 
-const options = require( "yargs" )
-    .option( "p", { alias: "port",  describe: "设置服务启动的端口号", type: "number" } )
-    .option( "i", { alias: "index", describe: "设置默认打开的主页", type: "string" } )
-    .option( "c", { alias: "charset", describe: "设置文件的默认字符集", type: "string" } )
-    .option( "cors", { describe: "设置文件是否跨域", type: "boolean" } )
-    .option( "h", { alias: "https", describe: "设置是否启用https服务", type: "boolean" } )
+const options = require('yargs')
+    .option('p', { alias: 'port',  describe: '设置服务启动的端口号', type: 'number' })
+    .option('i', { alias: 'index', describe: '设置默认打开的主页', type: 'string' })
+    .option('c', { alias: 'charset', describe: '设置文件的默认字符集', type: 'string' })
+    .option('cors', { describe: '是否开启文件跨域', type: 'boolean' })
+    .option('openindex', { describe: '是否打开默认页面', type: 'boolean' })
+    .option('h', { alias: 'https', describe: '是否启用https服务', type: 'boolean' })
     .help()
-    .alias( "?", "help" )
+    .boolean('openbrowser')
+    .default('openbrowser', true)
+    .alias('?', 'help')
     .argv;
 
 const hasTrailingSlash = url => url[url.length - 1] === '/';
@@ -32,9 +35,12 @@ const ifaces = os.networkInterfaces();
 
 class StaticServer {
     constructor() {
+        console.log(options);
         this.port = options.p || config.port;
         this.indexPage = options.i || config.indexPage;
         this.openIndexPage = config.openIndexPage;
+        this.openIndex = config.openIndexPage;
+        this.openBrowser = config.openbrowser;
         this.charset = options.c || config.charset;
         this.cors = options.cors;
         this.protocal = options.h ? 'https' : 'http';
@@ -104,7 +110,7 @@ class StaticServer {
     respondDirectory(pathName, req, res) {
         const indexPagePath = path.join(pathName, this.indexPage);
         // 如果文件夹下存在index.html，则默认打开
-        if (fs.existsSync(indexPagePath) && this.openIndexPage) {
+        if (this.openIndex && fs.existsSync(indexPagePath) && this.openIndexPage) {
             this.respond(indexPagePath, req, res);
         } else {
             fs.readdir(pathName, (err, files) => {
@@ -197,7 +203,9 @@ class StaticServer {
                 me.logUsedPort(oldPort, me.port);
             }
             me.logUsingPort();
-            open(`${me.protocal}://127.0.0.1:${me.port}`);
+            if (me.openBrowser) {
+                open(`${me.protocal}://127.0.0.1:${me.port}`);
+            }
         });
         
         server.on('error', function (err) {

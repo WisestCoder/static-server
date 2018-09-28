@@ -25,6 +25,10 @@ server -c[charset] UTF-8  # 设置文件默认加载的字符编码
 server -cors  # 开启文件跨域
 
 server -h[https]  # 开启https服务
+
+server --openindex  # 是否打开默认页面
+
+server --no-openbrowser  # 关闭自动打开浏览器
 ```
 
 ### 默认配置（会被命令行参数覆盖）
