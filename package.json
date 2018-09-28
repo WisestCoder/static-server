@@ -1,6 +1,6 @@
 {
   "name": "yumu-static-server",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "使用node搭建静态资源服务器",
   "main": "index.js",
   "scripts": {
