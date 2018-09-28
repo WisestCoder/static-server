@@ -11,7 +11,7 @@ const Handlebars = require('handlebars');
 const pem = require('pem');
 const mime = require('./mime');
 const Template = require('./templates');
-const config = require('../config/default');
+// const config = require('../config/default');
 
 const _defaultTemplate = Handlebars.compile(Template.page_dafault);
 const _404TempLate = Handlebars.compile(Template.page_404);
@@ -22,14 +22,14 @@ const ifaces = os.networkInterfaces();
 
 class StaticServer {
     constructor(options) {
-        this.port = options.p || config.port;
-        this.indexPage = options.i || config.indexPage;
-        this.openIndexPage = config.openIndexPage;
-        this.openIndex = config.openIndexPage;
-        this.openBrowser = config.openbrowser;
-        this.charset = options.c || config.charset;
+        this.port = options.port;
+        this.indexPage = options.index;
+        this.openIndexPage = options.openindex;
+        this.openBrowser = options.openbrowser;
+        this.charset = options.charset;
         this.cors = options.cors;
-        this.protocal = options.h ? 'https' : 'http';
+        this.protocal = options.https ? 'https' : 'http';
+        this.zipMatch = '^\\.(css|js|html)$';
     }
 
     respondError(err, res) {
@@ -96,7 +96,7 @@ class StaticServer {
     respondDirectory(pathName, req, res) {
         const indexPagePath = path.join(pathName, this.indexPage);
         // 如果文件夹下存在index.html，则默认打开
-        if (this.openIndex && fs.existsSync(indexPagePath) && this.openIndexPage) {
+        if (this.openIndexPage && fs.existsSync(indexPagePath)) {
             this.respond(indexPagePath, req, res);
         } else {
             fs.readdir(pathName, (err, files) => {

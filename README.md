@@ -5,6 +5,9 @@
 [![GitHub stars](https://img.shields.io/github/stars/dushao103500/static-server.svg?style=social&label=Star)](https://github.com/dushao103500/static-server)
 [![GitHub forks](https://img.shields.io/github/forks/dushao103500/static-server.svg?style=social&label=Fork)](https://github.com/dushao103500/static-server)
 
+### Demo
+![](https://github.com/wisestcoder/assert/blob/master/static_server_demo.gif)
+
 ### 安装
 
 ```bash
@@ -31,20 +34,6 @@ server --openindex  # 是否打开默认页面
 server --no-openbrowser  # 关闭自动打开浏览器
 ```
 
-### 默认配置（会被命令行参数覆盖）
-
-`./config/default.json`
-
-```javascript
-{
-  "port": 8080, // 服务启动的端口号
-  "indexPage": "index.html", // 文件夹下默认加载文件
-  "openIndexPage": true, // 是否默认加载文件
-  "charset": "UTF-8", // 默认字符编码
-  "zipMatch": "^\\.(css|js|html)$" // 默认
-}
-```
-
 ### 基本功能
 
 1. 启动静态资源服务器
@@ -52,7 +41,7 @@ server --no-openbrowser  # 关闭自动打开浏览器
 3. 字符编码可配置
 4. 文件夹下默认加载文件可配置
 5. 是否跨域可配置
-5. 开启https服务
+6. 开启https服务
 
 ### TODO
 
