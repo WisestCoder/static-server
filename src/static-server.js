@@ -11,7 +11,6 @@ const Handlebars = require('handlebars');
 const pem = require('pem');
 const mime = require('./mime');
 const Template = require('./templates');
-// const config = require('../config/default');
 
 const _defaultTemplate = Handlebars.compile(Template.page_dafault);
 const _404TempLate = Handlebars.compile(Template.page_404);

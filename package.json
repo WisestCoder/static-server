@@ -12,11 +12,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/dushao103500/static-server"
+    "url": "https://github.com/WisestCoder/static-server"
   },
   "author": "",
   "license": "ISC",
-  "homepage": "https://github.com/dushao103500/static-server#readme",
+  "homepage": "https://github.com/WisestCoder/static-server#readme",
   "keywords": [
     "static-server",
     "server"
