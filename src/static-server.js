@@ -31,11 +31,26 @@ class StaticServer {
         this.zipMatch = '^\\.(css|js|html)$';
     }
 
+    /**
+     * 响应错误
+     *
+     * @param {*} err
+     * @param {*} res
+     * @returns
+     * @memberof StaticServer
+     */
     respondError(err, res) {
         res.writeHead(500);
         return res.end(err);        
     }
 
+    /**
+     * 响应404
+     *
+     * @param {*} req
+     * @param {*} res
+     * @memberof StaticServer
+     */
     respondNotFound(req, res) {
         res.writeHead(404, {
             'Content-Type': 'text/html'
@@ -44,18 +59,33 @@ class StaticServer {
         res.end(html);
     }
 
-    shouldCompress(pathName) {
-        return path.extname(pathName).match(this.zipMatch);
-    }
-
     respond(pathName, req, res) {
         fs.stat(pathName, (err, stat) => {
             if (err) return respondError(err, res);
             this.responseFile(stat, pathName, req, res);
         });
-
     }
 
+    /**
+     * 判断是否需要解压
+     *
+     * @param {*} pathName
+     * @returns
+     * @memberof StaticServer
+     */
+    shouldCompress(pathName) {
+        return path.extname(pathName).match(this.zipMatch);
+    }
+
+    /**
+     * 解压文件
+     *
+     * @param {*} readStream
+     * @param {*} req
+     * @param {*} res
+     * @returns
+     * @memberof StaticServer
+     */
     compressHandler(readStream, req, res) {
         const acceptEncoding = req.headers['accept-encoding'];
         if (!acceptEncoding || !acceptEncoding.match(/\b(gzip|deflate)\b/)) {
@@ -66,19 +96,38 @@ class StaticServer {
         }
     }
 
+    /**
+     * 响应文件路径
+     *
+     * @param {*} stat
+     * @param {*} pathName
+     * @param {*} req
+     * @param {*} res
+     * @memberof StaticServer
+     */
     responseFile(stat, pathName, req, res) {
-        let readStream;
+        // 设置响应头
         res.setHeader('Content-Type', `${mime.lookup(pathName)}; charset=${this.charset}`);
         res.setHeader('Accept-Ranges', 'bytes');
+
+        // 添加跨域
         if (this.cors) res.setHeader('Access-Control-Allow-Origin', '*');
+
+        let readStream;
         readStream = fs.createReadStream(pathName);
-        // 判断是否需要解压
-        if (this.shouldCompress(pathName)) {
+        if (this.shouldCompress(pathName)) { // 判断是否需要解压
             readStream = this.compressHandler(readStream, req, res);
         }
         readStream.pipe(res);
     }
-
+  
+    /**
+     * 响应重定向
+     *
+     * @param {*} req
+     * @param {*} res
+     * @memberof StaticServer
+     */
     respondRedirect(req, res) {
         const location = req.url + '/';
         res.writeHead(301, {
@@ -92,6 +141,14 @@ class StaticServer {
         res.end(html);
     }
 
+    /**
+     * 响应文件夹路径
+     *
+     * @param {*} pathName
+     * @param {*} req
+     * @param {*} res
+     * @memberof StaticServer
+     */
     respondDirectory(pathName, req, res) {
         const indexPagePath = path.join(pathName, this.indexPage);
         // 如果文件夹下存在index.html，则默认打开
@@ -128,6 +185,14 @@ class StaticServer {
         }
     }
 
+    /**
+     * 路由处理
+     *
+     * @param {*} pathName
+     * @param {*} req
+     * @param {*} res
+     * @memberof StaticServer
+     */
     routeHandler(pathName, req, res) {
         const realPathName = pathName.split('?')[0];
         fs.stat(realPathName, (err, stat) => {
@@ -151,6 +216,11 @@ class StaticServer {
         });
     }
 
+    /**
+     * 打印ip地址
+     *
+     * @memberof StaticServer
+     */
     logUsingPort() {
         const me = this;
         console.log(`${chalk.yellow(`Starting up your server\nAvailable on:`)}`);
@@ -164,15 +234,35 @@ class StaticServer {
         console.log(`${chalk.cyan(Array(50).fill('-').join(''))}`);
     }
 
+    /**
+     * 打印占用端口
+     *
+     * @param {*} oldPort
+     * @param {*} port
+     * @memberof StaticServer
+     */
     logUsedPort(oldPort, port) {
         const me = this;
         console.log(`${chalk.red(`The port ${oldPort} is being used, change to port `)}${chalk.green(me.port)} `);
     }
 
+    /**
+     * 打印https证书友好提示
+     *
+     * @memberof StaticServer
+     */
     logHttpsTrusted() {
         console.log(chalk.green('Currently is using HTTPS certificate (Manually trust it if necessary)'));
     }
 
+
+    /**
+     * 打印路由路径输出
+     *
+     * @param {*} isError
+     * @param {*} pathName
+     * @memberof StaticServer
+     */
     logGetInfo(isError, pathName) {
         if (isError) {
             console.log(chalk.red(`404  ${pathName}`));

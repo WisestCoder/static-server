@@ -5,7 +5,7 @@ module.exports =  `
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
-  <title>Document</title>
+  <title>node静态服务器</title>
   <style>
     .not-found-content {
       display: flex;
@@ -35,7 +35,7 @@ module.exports =  `
   <div class="not-found-content">
     <img src="https://img.alicdn.com/tfs/TB1txw7bNrI8KJjy0FpXXb5hVXa-260-260.png" class="img-notfound" alt="not found">
     <div class="prompt">
-      <h3>抱歉，你访问的页面不存在</h3>
+      <h3>抱歉，你访问的路径不存在</h3>
       <p>您要找的页面没有找到，请返回<a class="link-font" href="/">首页</a>继续浏览</p>
     </div>
   </div>
