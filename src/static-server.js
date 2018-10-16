@@ -129,7 +129,9 @@ class StaticServer {
     }
 
     routeHandler(pathName, req, res) {
-        fs.stat(pathName, (err, stat) => {
+        const realPathName = pathName.split('?')[0];
+        fs.stat(realPathName, (err, stat) => {
+            this.logGetInfo(err, pathName);
             if (!err) {
                 const requestedPath = url.parse(req.url).pathname;
                 // 检查url
@@ -137,11 +139,11 @@ class StaticServer {
                 // 如果是文件夹，但末尾没'/'，则重定向至'xxx/'
                 // 如果是文件，则判断是否是压缩文件，是则解压，不是则读取文件
                 if (hasTrailingSlash(requestedPath) && stat.isDirectory()) {
-                    this.respondDirectory(pathName, req, res);
+                    this.respondDirectory(realPathName, req, res);
                 } else if (stat.isDirectory()) {
                     this.respondRedirect(req, res);
                 } else {
-                    this.respond(pathName, req, res);
+                    this.respond(realPathName, req, res);
                 }
             } else {
                 this.respondNotFound(req, res);
@@ -159,6 +161,7 @@ class StaticServer {
                 }
             });
         });
+        console.log(`${chalk.cyan(Array(50).fill('-').join(''))}`);
     }
 
     logUsedPort(oldPort, port) {
@@ -168,6 +171,14 @@ class StaticServer {
 
     logHttpsTrusted() {
         console.log(chalk.green('Currently is using HTTPS certificate (Manually trust it if necessary)'));
+    }
+
+    logGetInfo(isError, pathName) {
+        if (isError) {
+            console.log(chalk.red(`404  ${pathName}`));
+        } else {
+            console.log(chalk.cyan(`200  ${pathName}`));
+        }
     }
 
     startServer(keys) {

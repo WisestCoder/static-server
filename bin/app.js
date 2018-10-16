@@ -11,7 +11,7 @@ const options = require('yargs')
 
     // 默认参数
     .default('openbrowser', true)
-    .default('https', true)
+    // .default('https', true)
     .default('port', 8080)
     .default('index', 'index.html')
     .default('openindex', 'index.html')
