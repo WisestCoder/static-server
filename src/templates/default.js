@@ -54,6 +54,12 @@ module.exports = `
     .footer .bold {
       font-weight: 600;
     }
+    .footer a {
+      color: #333;
+    }
+    .footer a:hover {
+      color: red;
+    }
   </style>
 </head>
 <body>
@@ -80,7 +86,7 @@ module.exports = `
   </div>
   <div class="footer">
       <span>Github地址: <a target="_blank" href="https://github.com/WisestCoder/static-server">https://github.com/WisestCoder/static-server</a></span>
-      <span class="bold">&copy; WisestCoder</span>
+      <span class="bold">By <a target="_blank" href="https://github.com/WisestCoder">WisestCoder</a></span>
   </div>
 </body>
 </html>
