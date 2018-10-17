@@ -163,14 +163,24 @@ class StaticServer {
                 const fileList = [];
                 files.forEach(fileName => {
                     let itemLink = path.join(requestPath, fileName);
+                    let isDirectory = false;
                     const stat = fs.statSync(path.join(pathName, fileName));
                     if (stat && stat.isDirectory()) {
                         itemLink = path.join(itemLink, '/');
+                        isDirectory = true;
                     }     
                     fileList.push({
                         link: itemLink,
-                        name: fileName
+                        name: fileName,
+                        isDirectory
                     });            
+                });
+                // 排序，目录在前，文件在后
+                fileList.sort((prev, next) => {
+                    if (prev.isDirectory && !next.isDirectory) {
+                        return -1;
+                    }
+                    return 1;
                 });
                 res.writeHead(200, {
                     'Content-Type': 'text/html'

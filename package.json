@@ -4,8 +4,8 @@
   "description": "使用node搭建静态资源服务器",
   "main": "index.js",
   "scripts": {
-    "dev": "supervisor app.js",
-    "start": "node app.js"
+    "dev": "supervisor bin/app.js",
+    "start": "npm run dev"
   },
   "bin": {
     "server": "index.js"
