@@ -1,5 +1,5 @@
 {
-  "name": "yumu-static-server",
+  "name": "@wisestcoder/static-server",
   "version": "0.0.14",
   "description": "使用node搭建静态资源服务器",
   "main": "index.js",
