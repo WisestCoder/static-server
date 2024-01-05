@@ -11,7 +11,7 @@
 ### 安装
 
 ```bash
-npm install yumu-static-server -g
+npm install @wisestcoder/static-server -g
 ```
 
 ### 使用
